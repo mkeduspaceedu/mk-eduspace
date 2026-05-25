@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MK Eduspace — This Turn Changes Your Life</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#050810;
+  --bg2:#080d1c;
+  --bg3:#0c1228;
+  --ink:#04060d;
+  --gold:#c8a84b;
+  --gold2:#e2c87e;
+  --gold3:#f5e8c0;
+  --gold-dim:#6e5420;
+  --cream:#f0e8d5;
+  --page:#f7f2e8;
+  --page2:#ede4d0;
+  --text:#d8e0f0;
+  --text2:#8fa0b8;
+  --text3:#4a5568;
+  --border:rgba(200,168,75,0.14);
+  --border2:rgba(200,168,75,0.32);
+  --glow:rgba(200,168,75,0.18);
+  --gap:130px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;cursor:none;line-height:1.65;}
+
+/* CURSOR */
+.cur{position:fixed;width:20px;height:20px;border:1.5px solid var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .18s,height .18s,opacity .18s;mix-blend-mode:normal;}
+.cur-dot{position:fixed;width:4px;height:4px;background:var(--gold2);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);}
+.cur.big{width:44px;height:44px;opacity:.4;}
+
+/* CANVAS */
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* NOISE */
+.noise{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.018;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--bg);z-index:10000;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:opacity .7s,visibility .7s;}
+#loader.out{opacity:0;visibility:hidden;}
+.ld-book{width:56px;height:40px;position:relative;}
+.ld-page{position:absolute;width:26px;height:36px;background:var(--page);border-radius:1px 4px 4px 1px;top:2px;transform-origin:left center;animation:ldFlip 1.2s ease-in-out infinite;}
+.ld-page:nth-child(1){left:0;background:var(--page2);border-radius:4px 1px 1px 4px;animation:none;}
+.ld-page:nth-child(2){left:28px;animation-delay:0s;}
+.ld-page:nth-child(3){left:28px;opacity:.6;animation-delay:.15s;}
+@keyframes ldFlip{0%{transform:rotateY(0deg);}50%{transform:rotateY(-160deg);}100%{transform:rotateY(-160deg) scaleX(0);opacity:0;}}
+.ld-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--text3);text-transform:uppercase;}
+.ld-brand{font-family:'Playfair Display',serif;font-size:22px;color:var(--gold2);letter-spacing:2px;}
+
+/* WRAP */
+.wrap{max-width:1140px;margin:0 auto;padding:0 36px;position:relative;z-index:1;}
+
+/* NAV */
+nav{display:flex;justify-content:space-between;align-items:center;padding:30px 0 0;opacity:0;animation:fadeU .7s ease 2.4s forwards;}
+.nav-brand{display:flex;flex-direction:column;line-height:1;}
+.nav-brand-name{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--gold2);letter-spacing:1px;}
+.nav-brand-motto{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:var(--text3);text-transform:uppercase;margin-top:2px;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{color:var(--text3);text-decoration:none;font-size:12px;letter-spacing:1.5px;font-weight:500;transition:color .25s;text-transform:uppercase;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--gold);transition:width .25s;}
+.nav-links a:hover{color:var(--gold2);}
+.nav-links a:hover::after{width:100%;}
+.nav-cv{padding:9px 22px;border:1.5px solid var(--border2);color:var(--gold);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;background:transparent;cursor:pointer;border-radius:2px;transition:all .25s;font-family:'Outfit',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:7px;}
+.nav-cv:hover{background:var(--gold);color:var(--ink);}
+@keyframes fadeU{to{opacity:1;}}
+
+/* ══════════════════════════════
+   HERO / EDUSPACE BRAND SECTION
+══════════════════════════════ */
+.hero{min-height:96vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 60px;position:relative;}
+.hero-top{display:grid;grid-template-columns:1fr 520px;gap:70px;align-items:center;opacity:0;animation:heroIn .9s ease 2.5s forwards;}
+
+/* LEFT */
+.hero-pre{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.hero-pre-line{width:32px;height:1px;background:var(--gold);}
+.hero-pre-text{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;}
+.hero-brand{font-family:'Playfair Display',serif;font-size:clamp(52px,8vw,88px);font-weight:900;line-height:.95;color:var(--cream);margin-bottom:8px;}
+.hero-brand em{font-style:italic;color:var(--gold2);}
+.hero-motto-wrap{margin-bottom:28px;}
+.hero-motto{font-family:'Playfair Display',serif;font-size:clamp(17px,2.2vw,24px);font-weight:400;font-style:italic;color:var(--gold);line-height:1.4;}
+.hero-motto-sub{font-size:13px;color:var(--text2);margin-top:6px;letter-spacing:.3px;}
+.hero-by{font-size:14px;color:var(--text2);margin-bottom:32px;line-height:1.7;max-width:460px;}
+.hero-by strong{color:var(--text);font-weight:500;}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn{padding:13px 30px;font-size:12px;font-weight:600;letter-spacing:1.5px;cursor:pointer;transition:all .28s;border-radius:2px;text-transform:uppercase;font-family:'Outfit',sans-serif;}
+.btn-gold{background:var(--gold);color:var(--ink);border:1.5px solid var(--gold);}
+.btn-gold:hover{background:transparent;color:var(--gold);box-shadow:0 0 28px var(--glow);}
+.btn-ghost{background:transparent;color:var(--gold);border:1.5px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--gold);box-shadow:0 0 20px rgba(200,168,75,.1);}
+@keyframes heroIn{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:translateY(0);}}
+
+/* ══════════════════
+   BOOK PAGE FLIP SVG
+══════════════════ */
+.book-stage{position:relative;width:520px;height:380px;opacity:0;animation:heroIn .9s ease 2.7s forwards;}
+.book-svg{width:100%;height:100%;}
+/* Book base shadow */
+.book-shadow{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);width:70%;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.5) 0%,transparent 70%);filter:blur(6px);}
+
+/* ══════════════════
+   ACCOLADES
+══════════════════ */
+.accolades{display:grid;grid-template-columns:repeat(4,1fr);margin-bottom:var(--gap);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.accolade{padding:28px 20px;background:rgba(8,13,28,.75);text-align:center;border-right:1px solid var(--border);transition:background .35s;cursor:default;}
+.accolade:last-child{border-right:none;}
+.accolade:hover{background:rgba(200,168,75,.05);}
+.accolade-icon{font-size:22px;margin-bottom:8px;display:block;}
+.accolade-label{font-family:'DM Mono',monospace;font-size:9.5px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
+.accolade-value{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--gold2);line-height:1.35;}
+
+/* ══════════════════
+   SECTION HEADER
+══════════════════ */
+section{margin-bottom:var(--gap);}
+.sh{margin-bottom:52px;}
+.sh-pre{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.sh-line{width:28px;height:1px;background:var(--gold);}
+.sh-tag{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;}
+.sh-title{font-family:'Playfair Display',serif;font-size:clamp(32px,4.5vw,52px);font-weight:700;color:var(--cream);line-height:1.05;}
+.sh-title em{font-style:italic;color:var(--gold2);}
+
+/* ══════════════════
+   EDUCATION
+══════════════════ */
+.edu-timeline{position:relative;padding-left:28px;}
+.edu-timeline::before{content:'';position:absolute;left:0;top:10px;bottom:10px;width:1px;background:linear-gradient(180deg,var(--gold) 0%,rgba(200,168,75,.08) 100%);}
+.edu-entry{position:relative;padding:30px 34px;background:rgba(8,13,28,.7);border:1px solid var(--border);border-radius:4px;margin-bottom:22px;transition:all .35s;backdrop-filter:blur(10px);}
+.edu-entry:hover{border-color:var(--border2);transform:translateX(6px);}
+.edu-entry::before{content:'';position:absolute;left:-32px;top:34px;width:8px;height:8px;background:var(--gold);border-radius:50%;box-shadow:0 0 12px var(--gold);}
+.edu-deg{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--cream);margin-bottom:4px;}
+.edu-school{font-size:13.5px;color:var(--gold2);margin-bottom:14px;font-weight:500;}
+.edu-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{padding:4px 12px;border:1px solid var(--border);border-radius:2px;font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;}
+.chip.hl{color:var(--gold2);border-color:var(--border2);background:rgba(200,168,75,.08);}
+.edu-honors{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.honors-label{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+.honor-tags{display:flex;flex-wrap:wrap;gap:7px;}
+.htag{font-size:11.5px;color:var(--gold);padding:3px 10px;background:rgba(200,168,75,.06);border:1px solid var(--border);border-radius:2px;}
+
+/* ══════════════════
+   RESEARCH
+══════════════════ */
+.rg{display:grid;grid-template-columns:repeat(2,1fr);gap:2px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+.rc{padding:34px;background:var(--bg2);transition:background .35s;position:relative;overflow:hidden;cursor:default;}
+.rc::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,var(--gold-dim),var(--gold2));opacity:0;transition:opacity .35s;}
+.rc:hover{background:rgba(10,16,36,.98);}
+.rc:hover::after{opacity:1;}
+.rc-num{font-family:'Playfair Display',serif;font-size:60px;font-weight:900;font-style:italic;color:var(--gold);opacity:.1;position:absolute;top:14px;right:20px;line-height:1;}
+.rc-inst{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;}
+.rc-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--cream);margin-bottom:10px;line-height:1.3;}
+.rc-desc{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:14px;}
+.rc-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;background:rgba(200,168,75,.09);border:1px solid var(--border2);border-radius:2px;font-size:11px;color:var(--gold2);font-family:'DM Mono',monospace;}
+
+/* ══════════════════
+   SKILLS
+══════════════════ */
+.sk-wrap{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+.sk-list{display:flex;flex-direction:column;gap:20px;}
+.sk-row .sk-head{display:flex;justify-content:space-between;margin-bottom:9px;}
+.sk-name{font-size:13px;font-weight:500;color:var(--text);}
+.sk-desc{font-size:11px;color:var(--text3);font-style:italic;}
+.sk-track{height:3px;background:rgba(200,168,75,.1);border-radius:2px;overflow:hidden;}
+.sk-fill{height:100%;background:linear-gradient(90deg,var(--gold-dim),var(--gold2));width:0;transition:width 1.5s cubic-bezier(.22,1,.36,1);}
+.sk-panel{padding:34px;background:rgba(8,13,28,.75);border:1px solid var(--border);border-radius:4px;backdrop-filter:blur(8px);}
+.sk-panel-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--cream);margin-bottom:18px;}
+.tech-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.ttag{padding:5px 12px;border:1px solid var(--border);border-radius:2px;font-size:11px;color:var(--text2);font-family:'DM Mono',monospace;transition:all .25s;}
+.ttag:hover{border-color:var(--border2);color:var(--gold);}
+.inst-list{border-top:1px solid var(--border);padding-top:18px;}
+.inst-item{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid rgba(200,168,75,.05);}
+.inst-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+/* ══════════════════════════════
+   TUTORING — MK EDUSPACE HERO
+══════════════════════════════ */
+.tutor-outer{border:1px solid var(--border2);border-radius:6px;overflow:hidden;position:relative;}
+
+/* Top brand strip */
+.tutor-strip{background:var(--gold);padding:0;display:flex;align-items:stretch;}
+.tutor-strip-brand{padding:14px 28px;display:flex;flex-direction:column;justify-content:center;border-right:1px solid rgba(0,0,0,.15);}
+.tutor-strip-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--ink);letter-spacing:1px;line-height:1;}
+.tutor-strip-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;color:rgba(4,6,13,.65);text-transform:uppercase;margin-top:3px;}
+.tutor-strip-motto{flex:1;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-style:italic;font-weight:700;color:var(--ink);letter-spacing:.3px;padding:14px 28px;}
+.tutor-strip-motto::before,.tutor-strip-motto::after{content:'✦';margin:0 12px;font-size:10px;opacity:.5;}
+
+/* Hero motto visual inside tutoring */
+.tutor-motto-visual{background:linear-gradient(135deg,var(--bg3) 0%,var(--ink) 100%);padding:56px 48px;display:grid;grid-template-columns:1fr 340px;gap:60px;align-items:center;border-bottom:1px solid var(--border);}
+.tmv-left{}
+.tmv-headline{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,46px);font-weight:900;color:var(--cream);line-height:1.1;margin-bottom:16px;}
+.tmv-headline em{font-style:italic;color:var(--gold2);}
+.tmv-sub{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:28px;max-width:460px;}
+.tmv-proof{display:flex;gap:24px;flex-wrap:wrap;}
+.proof-item{text-align:center;}
+.proof-num{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--gold);line-height:1;}
+.proof-label{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;margin-top:4px;}
+
+/* Book flip animation in tutoring */
+.tmv-book{position:relative;width:340px;height:240px;display:flex;align-items:center;justify-content:center;}
+
+/* Body of tutoring */
+.tutor-body{padding:52px 48px;}
+.tutor-body-title{font-family:'Playfair Display',serif;font-size:clamp(22px,2.8vw,34px);font-weight:700;color:var(--cream);text-align:center;margin-bottom:10px;}
+.tutor-body-sub{font-size:14px;color:var(--text2);text-align:center;max-width:580px;margin:0 auto 44px;line-height:1.75;}
+
+/* Exam grid */
+.exam-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:44px;}
+.exam-tile{padding:22px 14px;background:rgba(4,6,13,.85);border:1px solid var(--border);border-radius:4px;text-align:center;transition:all .32s;cursor:default;position:relative;overflow:hidden;}
+.exam-tile::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,168,75,.07) 0%,transparent 70%);opacity:0;transition:opacity .32s;}
+.exam-tile:hover{border-color:var(--gold);transform:translateY(-7px);}
+.exam-tile:hover::before{opacity:1;}
+.exam-icon{font-size:26px;margin-bottom:10px;}
+.exam-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gold2);margin-bottom:5px;}
+.exam-desc{font-size:11px;color:var(--text3);line-height:1.6;}
+
+/* Feature grid */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:38px;}
+.feat{padding:20px 18px;background:rgba(4,6,13,.7);border:1px solid var(--border);border-radius:4px;transition:border-color .25s;}
+.feat:hover{border-color:var(--border2);}
+.feat-label{font-size:12px;font-weight:600;color:var(--gold2);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.feat-text{font-size:12px;color:var(--text3);line-height:1.65;}
+
+/* CTA */
+.tutor-cta{text-align:center;padding-top:10px;}
+.tutor-cta-note{font-size:13px;color:var(--text3);font-style:italic;margin-bottom:16px;}
+
+/* ══════════════════
+   AWARDS
+══════════════════ */
+.aw-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+.aw{padding:28px;background:rgba(8,13,28,.75);border:1px solid var(--border);border-radius:4px;transition:all .32s;position:relative;overflow:hidden;backdrop-filter:blur(8px);}
+.aw::after{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:linear-gradient(180deg,var(--gold2),var(--gold-dim));transition:height .38s;}
+.aw:hover{transform:translateY(-4px);border-color:var(--border2);}
+.aw:hover::after{height:100%;}
+.aw-src{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+.aw-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--gold2);margin-bottom:8px;line-height:1.3;}
+.aw-desc{font-size:13px;color:var(--text2);line-height:1.7;}
+
+/* ══════════════════
+   MARQUEE
+══════════════════ */
+.mq{overflow:hidden;padding:16px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:var(--gap);}
+.mq-track{display:flex;animation:mq 30s linear infinite;}
+.mq-item{padding:0 44px;font-family:'DM Mono',monospace;font-size:10.5px;font-weight:500;color:var(--text3);letter-spacing:3px;white-space:nowrap;text-transform:uppercase;}
+.mq-item span{color:var(--gold-dim);margin-right:44px;}
+@keyframes mq{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ══════════════════
+   CONTACT
+══════════════════ */
+.ct-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.ct-intro{font-family:'Playfair Display',serif;font-size:clamp(24px,3.5vw,40px);font-weight:700;color:var(--cream);line-height:1.15;margin-bottom:14px;}
+.ct-intro em{font-style:italic;color:var(--gold2);}
+.ct-para{font-size:14px;color:var(--text2);line-height:1.85;margin-bottom:34px;}
+.ct-links{display:flex;flex-direction:column;gap:10px;}
+.ct-link{display:flex;align-items:center;gap:14px;padding:14px 18px;background:rgba(8,13,28,.75);border:1px solid var(--border);border-radius:4px;color:var(--text);text-decoration:none;font-size:13px;font-weight:500;transition:all .28s;backdrop-filter:blur(8px);}
+.ct-link:hover{border-color:var(--border2);color:var(--gold);transform:translateX(6px);}
+.ct-link-icon{width:34px;height:34px;background:rgba(200,168,75,.08);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.ct-card{padding:42px;background:rgba(8,13,28,.9);border:1px solid var(--border2);border-radius:6px;position:relative;overflow:hidden;sticky:top 60px;}
+.ct-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 60% at 50% 0%,rgba(200,168,75,.05) 0%,transparent 60%);pointer-events:none;}
+.ct-qmark{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:var(--gold);opacity:.18;line-height:.7;margin-bottom:14px;}
+.ct-quote{font-family:'Playfair Display',serif;font-size:clamp(17px,2vw,22px);font-weight:600;font-style:italic;color:var(--cream);line-height:1.5;margin-bottom:8px;}
+.ct-attr{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:26px;}
+.ct-sub{font-size:13px;color:var(--text2);line-height:1.75;padding-top:18px;border-top:1px solid var(--border);}
+
+/* FOOTER */
+footer{text-align:center;padding:40px 0;border-top:1px solid var(--border);}
+.ft-brand{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold2);letter-spacing:2px;margin-bottom:6px;}
+.ft-motto{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2.5px;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+.ft-copy{font-size:11.5px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:.5px;}
+
+/* SCROLL REVEAL */
+.sr{opacity:0;transform:translateY(32px);transition:opacity .85s ease,transform .85s ease;}
+.sr.vis{opacity:1;transform:translateY(0);}
+
+/* ══════════════
+   RESPONSIVE
+══════════════ */
+@media(max-width:960px){
+  .hero-top{grid-template-columns:1fr;gap:50px;}
+  .book-stage{width:100%;max-width:440px;margin:0 auto;}
+  .rg{grid-template-columns:1fr;}
+  .aw-grid{grid-template-columns:1fr;}
+  .sk-wrap{grid-template-columns:1fr;gap:28px;}
+  .ct-grid{grid-template-columns:1fr;gap:36px;}
+  .accolades{grid-template-columns:repeat(2,1fr);}
+  .accolade{border-right:none;border-bottom:1px solid var(--border);}
+  .exam-grid{grid-template-columns:repeat(3,1fr);}
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .tutor-motto-visual{grid-template-columns:1fr;gap:36px;}
+  .tmv-book{width:100%;max-width:300px;height:180px;margin:0 auto;}
+  .tutor-body{padding:36px 24px;}
+  .tutor-strip{flex-direction:column;}
+  .tutor-strip-brand{border-right:none;border-bottom:1px solid rgba(0,0,0,.12);}
+}
+@media(max-width:600px){
+  .wrap{padding:0 18px;}
+  nav{flex-direction:column;gap:18px;padding:20px 0 0;}
+  .nav-links{gap:18px;}
+  .exam-grid{grid-template-columns:repeat(2,1fr);}
+  .feat-grid{grid-template-columns:1fr;}
+  .accolades{grid-template-columns:1fr;}
+  .hero{padding:50px 0 40px;}
+  .tutor-motto-visual{padding:36px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-book">
+    <div class="ld-page"></div>
+    <div class="ld-page"></div>
+    <div class="ld-page"></div>
+  </div>
+  <div class="ld-brand">MK Eduspace</div>
+  <div class="ld-label">Loading your universe</div>
+</div>
+
+<canvas id="cv"></canvas>
+<div class="noise"></div>
+<div class="cur" id="cur"></div>
+<div class="cur-dot" id="curDot"></div>
+
+<div class="wrap">
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-brand-name">MK Eduspace</div>
+    <div class="nav-brand-motto">This turn changes your life</div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#education">Education</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#tutoring">Tutoring</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cv" href="#" id="cvBtn" download>⬇ Download CV</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-left">
+      <div class="hero-pre"><div class="hero-pre-line"></div><div class="hero-pre-text">Astrophysicist · Researcher · Educator</div></div>
+      <h1 class="hero-brand">MK <em>Eduspace</em></h1>
+      <div class="hero-motto-wrap">
+        <div class="hero-motto">"This turn changes your life."</div>
+        <div class="hero-motto-sub">By M.K. Barath — University Topper · MSc Physics · Pondicherry University</div>
+      </div>
+      <p class="hero-by">Astrophysicist and Educator — recognized by <strong>ISRO</strong> and the <strong>Indian Institute of Astrophysics</strong> — now dedicated to turning every student's academic journey into something extraordinary.</p>
+      <div class="hero-btns">
+        <button class="btn btn-gold" onclick="document.getElementById('tutoring').scrollIntoView({behavior:'smooth'})">Start Your Journey</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('research').scrollIntoView({behavior:'smooth'})">View Research</button>
+      </div>
+    </div>
+
+    <!-- BOOK FLIP SVG ANIMATION -->
+    <div class="book-stage" aria-hidden="true">
+      <svg class="book-svg" id="bookSvg" viewBox="0 0 520 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="14" flood-color="rgba(0,0,0,0.55)"/>
+          </filter>
+          <filter id="pageShadow" x="-10%" y="-10%" width="120%" height="120%">
+            <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.4)"/>
+          </filter>
+          <linearGradient id="pageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f7f2e8"/>
+            <stop offset="100%" stop-color="#e8dfc8"/>
+          </linearGradient>
+          <linearGradient id="pageGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ede4d0"/>
+            <stop offset="100%" stop-color="#d8cdb0"/>
+          </linearGradient>
+          <linearGradient id="spineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1a1400"/>
+            <stop offset="100%" stop-color="#2e2408"/>
+          </linearGradient>
+          <linearGradient id="coverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0c1228"/>
+            <stop offset="100%" stop-color="#04060d"/>
+          </linearGradient>
+          <linearGradient id="goldLine" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="rgba(200,168,75,0)"/>
+            <stop offset="50%" stop-color="rgba(200,168,75,0.9)"/>
+            <stop offset="100%" stop-color="rgba(200,168,75,0)"/>
+          </linearGradient>
+        </defs>
+
+        <!-- BOOK BODY - LEFT SIDE (static) -->
+        <g filter="url(#softShadow)">
+          <!-- Left cover -->
+          <rect x="90" y="60" width="165" height="240" rx="3" fill="url(#coverGrad)" stroke="rgba(200,168,75,0.3)" stroke-width="1"/>
+          <!-- Gold border on left cover -->
+          <rect x="97" y="68" width="151" height="224" rx="2" fill="none" stroke="rgba(200,168,75,0.2)" stroke-width="1"/>
+          <!-- Title text on cover -->
+          <text x="172" y="148" text-anchor="middle" font-family="'Playfair Display',serif" font-size="15" font-weight="700" fill="#c8a84b" opacity="0.9">MK</text>
+          <text x="172" y="168" text-anchor="middle" font-family="'Playfair Display',serif" font-size="10" font-weight="400" font-style="italic" fill="#c8a84b" opacity="0.6">Eduspace</text>
+          <rect x="132" y="175" width="80" height="1" fill="url(#goldLine)"/>
+          <text x="172" y="192" text-anchor="middle" font-family="'Playfair Display',serif" font-size="8" fill="rgba(200,168,75,0.4)" font-style="italic">This turn changes</text>
+          <text x="172" y="204" text-anchor="middle" font-family="'Playfair Display',serif" font-size="8" fill="rgba(200,168,75,0.4)" font-style="italic">your life</text>
+
+          <!-- Spine -->
+          <rect x="253" y="60" width="14" height="240" fill="url(#spineGrad)"/>
+          <line x1="256" y1="60" x2="256" y2="300" stroke="rgba(200,168,75,0.3)" stroke-width="0.5"/>
+          <line x1="264" y1="60" x2="264" y2="300" stroke="rgba(0,0,0,0.4)" stroke-width="0.5"/>
+
+          <!-- Right side pages stack (static) -->
+          <rect x="267" y="64" width="160" height="232" rx="2" fill="#d8cdb0"/>
+          <rect x="269" y="66" width="156" height="228" rx="2" fill="#e0d5bc"/>
+          <rect x="271" y="68" width="152" height="224" rx="2" fill="url(#pageGrad)"/>
+          <!-- Page lines -->
+          <line x1="285" y1="95" x2="407" y2="95" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="108" x2="407" y2="108" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="121" x2="407" y2="121" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="134" x2="380" y2="134" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="147" x2="395" y2="147" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="160" x2="370" y2="160" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="173" x2="400" y2="173" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="186" x2="385" y2="186" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="199" x2="407" y2="199" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="212" x2="360" y2="212" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="225" x2="395" y2="225" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="238" x2="375" y2="238" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="251" x2="407" y2="251" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <line x1="285" y1="264" x2="390" y2="264" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          <!-- Gold star accent on right page -->
+          <text x="347" y="88" text-anchor="middle" font-family="serif" font-size="11" fill="rgba(200,168,75,0.5)">✦</text>
+        </g>
+
+        <!-- ANIMATED FLIPPING PAGE (CSS animated via JS/SVG SMIL) -->
+        <g id="flipGroup" filter="url(#pageShadow)" style="transform-origin:267px 180px;">
+          <rect id="flipPage" x="267" y="68" width="152" height="224" rx="2" fill="url(#pageGrad2)"/>
+          <!-- Content on flipping page -->
+          <text x="343" y="100" text-anchor="middle" font-family="'Playfair Display',serif" font-size="11" font-style="italic" fill="rgba(4,6,13,0.5)">Chapter I</text>
+          <line x1="285" y1="110" x2="407" y2="110" stroke="rgba(0,0,0,0.08)" stroke-width="1"/>
+          <text x="343" y="135" text-anchor="middle" font-family="'Playfair Display',serif" font-size="9" fill="rgba(4,6,13,0.35)">Physics · Astrophysics</text>
+          <text x="343" y="150" text-anchor="middle" font-family="'Playfair Display',serif" font-size="9" fill="rgba(4,6,13,0.35)">Research · Discovery</text>
+          <line x1="310" y1="162" x2="376" y2="162" stroke="rgba(200,168,75,0.4)" stroke-width="0.8"/>
+          <text x="343" y="200" text-anchor="middle" font-family="serif" font-size="14" fill="rgba(200,168,75,0.3)">✦</text>
+          <text x="343" y="260" text-anchor="middle" font-family="'Playfair Display',serif" font-size="8" fill="rgba(4,6,13,0.2)" font-style="italic">This turn changes</text>
+          <text x="343" y="272" text-anchor="middle" font-family="'Playfair Display',serif" font-size="8" fill="rgba(4,6,13,0.2)" font-style="italic">your life</text>
+        </g>
+
+        <!-- Floating stars around book -->
+        <circle cx="70" cy="100" r="1.5" fill="rgba(200,168,75,0.6)"><animate attributeName="opacity" values="0.6;0.1;0.6" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="460" cy="130" r="1" fill="rgba(200,168,75,0.5)"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="480" cy="250" r="1.5" fill="rgba(210,220,255,0.5)"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="65" cy="280" r="1" fill="rgba(210,220,255,0.4)"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="3.5s" repeatCount="indefinite"/></circle>
+        <circle cx="110" cy="330" r="1.2" fill="rgba(200,168,75,0.4)"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.8s" repeatCount="indefinite"/></circle>
+
+        <!-- Book bottom shadow line -->
+        <ellipse cx="300" cy="308" rx="120" ry="8" fill="rgba(0,0,0,0.35)" filter="url(#softShadow)"/>
+
+        <!-- Motto text below book -->
+        <text x="300" y="345" text-anchor="middle" font-family="'Playfair Display',serif" font-size="13" font-style="italic" fill="rgba(200,168,75,0.5)">"This turn changes your life."</text>
+      </svg>
+      <div class="book-shadow"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCOLADES -->
+<div class="accolades sr">
+  <div class="accolade"><span class="accolade-icon">🏆</span><div class="accolade-label">Academic Standing</div><div class="accolade-value">University Topper<br>MSc Physics 2026</div></div>
+  <div class="accolade"><span class="accolade-icon">🔬</span><div class="accolade-label">Research Record</div><div class="accolade-value">4+ Recognised<br>Projects</div></div>
+  <div class="accolade"><span class="accolade-icon">🥇</span><div class="accolade-label">Recognition</div><div class="accolade-value">IIA · ISRO<br>ICAMP Award</div></div>
+  <div class="accolade"><span class="accolade-icon">🎓</span><div class="accolade-label">Teaching Focus</div><div class="accolade-value">NEET · JEE · CUET<br>Boards &amp; University</div></div>
+</div>
+
+<!-- EDUCATION -->
+<section id="education" class="sr">
+  <div class="sh"><div class="sh-pre"><div class="sh-line"></div><div class="sh-tag">Academic Background</div></div><h2 class="sh-title">Education &amp; <em>Formation</em></h2></div>
+  <div class="edu-timeline">
+    <div class="edu-entry">
+      <div class="edu-deg">Master of Science in Physics</div>
+      <div class="edu-school">Pondicherry University (Central University) — Puducherry, India</div>
+      <div class="edu-chips">
+        <span class="chip">Completed April 2026</span>
+        <span class="chip hl">CGPA: 9.29 / 10</span>
+        <span class="chip hl">🏆 Topper of the Batch</span>
+      </div>
+      <div class="edu-honors">
+        <div class="honors-label">Distinctions &amp; Highlights</div>
+        <div class="honor-tags">
+          <span class="htag">University Rank Holder</span>
+          <span class="htag">Excelled in Astrophysics Specialisation</span>
+          <span class="htag">IIA Research Collaboration</span>
+          <span class="htag">ISRO Workshop Recognition</span>
+        </div>
+      </div>
+    </div>
+    <div class="edu-entry">
+      <div class="edu-deg">Bachelor of Science in Physics</div>
+      <div class="edu-school">St. Joseph's College of Arts and Science — Cuddalore, Tamil Nadu</div>
+      <div class="edu-chips">
+        <span class="chip">Completed April 2024</span>
+        <span class="chip hl">CGPA: 8.6 / 10</span>
+        <span class="chip hl">🎖 College Distinction</span>
+      </div>
+      <div class="edu-honors">
+        <div class="honors-label">Distinctions &amp; Highlights</div>
+        <div class="honor-tags">
+          <span class="htag">Best Paper — ICAMP 2023</span>
+          <span class="htag">National Workshop Presenter</span>
+          <span class="htag">Science Academic Excellence</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research" class="sr">
+  <div class="sh"><div class="sh-pre"><div class="sh-line"></div><div class="sh-tag">Scientific Work</div></div><h2 class="sh-title">Research &amp; <em>Projects</em></h2></div>
+  <div class="rg">
+    <div class="rc"><div class="rc-num">01</div><div class="rc-inst">IIA · Bengaluru</div><div class="rc-title">Dynamical Study of Non-Sidereal Objects</div><div class="rc-desc">Collaborative project with the Indian Institute of Astrophysics investigating orbital dynamics of non-sidereal celestial bodies under Dr. Chrisphin Karthick.</div><div class="rc-badge">⭐ Institutional Collaboration</div></div>
+    <div class="rc"><div class="rc-num">02</div><div class="rc-inst">IIA · Award Recipient</div><div class="rc-title">Spectroscopic Studies of Be Stars</div><div class="rc-desc">In-depth investigation of spectroscopic characteristics and accretion disk properties of Be stars — honoured with a prestigious award and medal by IIA.</div><div class="rc-badge">🥇 Award &amp; Medal — Dr. Maheshwar Gopinath</div></div>
+    <div class="rc"><div class="rc-num">03</div><div class="rc-inst">ISRO &amp; ARIES</div><div class="rc-title">Solar Flare Light-Curve Analysis</div><div class="rc-desc">Aditya L1 support workshop project analysing solar flare light-curves — personally recognised by Dr. Sankarasubramanian K., Senior Solar Scientist at ISRO.</div><div class="rc-badge">🛰 ISRO Senior Scientist Recognition</div></div>
+    <div class="rc"><div class="rc-num">04</div><div class="rc-inst">Research Square · Published</div><div class="rc-title">Arduino Ear: IoT Environmental Monitoring</div><div class="rc-desc">Low-cost IoT system for real-time environmental monitoring. Peer-reviewed preprint published on Research Square.</div><div class="rc-badge">📄 DOI: 10.21203/rs.3.rs-4958935/v1</div></div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="sr">
+  <div class="sh"><div class="sh-pre"><div class="sh-line"></div><div class="sh-tag">Capabilities</div></div><h2 class="sh-title">Skills &amp; <em>Expertise</em></h2></div>
+  <div class="sk-wrap">
+    <div class="sk-list">
+      <div class="sk-row"><div class="sk-head"><span class="sk-name">Astrophysics Research</span><span class="sk-desc">Orbital dynamics, stellar physics</span></div><div class="sk-track"><div class="sk-fill" data-w="95"></div></div></div>
+      <div class="sk-row"><div class="sk-head"><span class="sk-name">Spectroscopic Analysis</span><span class="sk-desc">Be stars, accretion disks</span></div><div class="sk-track"><div class="sk-fill" data-w="90"></div></div></div>
+      <div class="sk-row"><div class="sk-head"><span class="sk-name">Teaching &amp; Mentoring</span><span class="sk-desc">NEET, JEE, CUET, Boards</span></div><div class="sk-track"><div class="sk-fill" data-w="96"></div></div></div>
+      <div class="sk-row"><div class="sk-head"><span class="sk-name">Computational Physics</span><span class="sk-desc">Simulations, data modelling</span></div><div class="sk-track"><div class="sk-fill" data-w="87"></div></div></div>
+      <div class="sk-row"><div class="sk-head"><span class="sk-name">Academic Writing</span><span class="sk-desc">Research papers, reports</span></div><div class="sk-track"><div class="sk-fill" data-w="92"></div></div></div>
+      <div class="sk-row"><div class="sk-head"><span class="sk-name">Data Analysis</span><span class="sk-desc">Light-curves, spectral data</span></div><div class="sk-track"><div class="sk-fill" data-w="85"></div></div></div>
+    </div>
+    <div class="sk-panel">
+      <div class="sk-panel-title">Tools &amp; Technologies</div>
+      <div class="tech-tags"><span class="ttag">Python</span><span class="ttag">MATLAB</span><span class="ttag">Arduino</span><span class="ttag">AstroImageJ</span><span class="ttag">IRAF</span><span class="ttag">LaTeX</span><span class="ttag">Origin Pro</span><span class="ttag">IoT Systems</span><span class="ttag">Gnuplot</span></div>
+      <div class="inst-list">
+        <div class="inst-item"><div class="inst-dot"></div>Optical Telescope Operation</div>
+        <div class="inst-item"><div class="inst-dot"></div>Spectrograph Calibration</div>
+        <div class="inst-item"><div class="inst-dot"></div>Solar Observatory Instruments</div>
+        <div class="inst-item"><div class="inst-dot"></div>CCD Imaging &amp; Reduction</div>
+        <div class="inst-item"><div class="inst-dot"></div>Environmental Sensor Arrays</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TUTORING — MK EDUSPACE -->
+<section id="tutoring" class="sr">
+  <div class="sh"><div class="sh-pre"><div class="sh-line"></div><div class="sh-tag">MK Eduspace</div></div><h2 class="sh-title">Where <em>Turns</em> Happen</h2></div>
+  <div class="tutor-outer">
+
+    <!-- Brand strip -->
+    <div class="tutor-strip">
+      <div class="tutor-strip-brand">
+        <div class="tutor-strip-name">MK Eduspace</div>
+        <div class="tutor-strip-tag">Elite Tutoring by M.K. Barath</div>
+      </div>
+      <div class="tutor-strip-motto">This turn changes your life</div>
+    </div>
+
+    <!-- Hero motto + book visual -->
+    <div class="tutor-motto-visual">
+      <div class="tmv-left">
+        <div class="tmv-headline">Your <em>academic story</em> begins with one decision.</div>
+        <p class="tmv-sub">Taught by a University Topper, ISRO-recognised researcher, and IIA Award winner — MK Eduspace brings elite scientific thinking into every tutoring session. Not just formulas. Not just ranks. A genuine turning point.</p>
+        <div class="tmv-proof">
+          <div class="proof-item"><div class="proof-num">9.29</div><div class="proof-label">MSc CGPA</div></div>
+          <div class="proof-item"><div class="proof-num">4+</div><div class="proof-label">Research Projects</div></div>
+          <div class="proof-item"><div class="proof-num">3</div><div class="proof-label">National Awards</div></div>
+        </div>
+      </div>
+      <!-- Compact animated book in tutoring -->
+      <div class="tmv-book" aria-hidden="true">
+        <svg width="100%" height="100%" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="tpg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f7f2e8"/><stop offset="100%" stop-color="#e0d4ba"/></linearGradient>
+            <linearGradient id="tcg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0c1228"/><stop offset="100%" stop-color="#04060d"/></linearGradient>
+            <filter id="ts"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="rgba(0,0,0,0.5)"/></filter>
+          </defs>
+          <g filter="url(#ts)">
+            <rect x="40" y="20" width="100" height="160" rx="2" fill="url(#tcg)" stroke="rgba(200,168,75,0.3)" stroke-width="1"/>
+            <text x="90" y="95" text-anchor="middle" font-family="'Playfair Display',serif" font-size="12" font-weight="700" fill="#c8a84b" opacity="0.8">MK</text>
+            <text x="90" y="110" text-anchor="middle" font-family="'Playfair Display',serif" font-size="8" fill="rgba(200,168,75,0.5)" font-style="italic">Eduspace</text>
+            <rect x="138" y="20" width="10" height="160" fill="#100d00"/>
+            <rect x="148" y="24" width="108" height="152" rx="2" fill="#d4c9a8"/>
+            <rect x="150" y="26" width="104" height="148" rx="2" fill="url(#tpg)"/>
+            <line x1="162" y1="50" x2="242" y2="50" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="64" x2="242" y2="64" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="78" x2="230" y2="78" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="92" x2="242" y2="92" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="106" x2="235" y2="106" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="120" x2="242" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="134" x2="228" y2="134" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+            <line x1="162" y1="148" x2="242" y2="148" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
+          </g>
+          <!-- Animated flip page -->
+          <g id="tFlip" style="transform-origin:148px 100px;">
+            <rect x="148" y="26" width="104" height="148" rx="2" fill="#ded1b0" opacity="0.9"/>
+            <text x="200" y="65" text-anchor="middle" font-family="'Playfair Display',serif" font-size="9" font-style="italic" fill="rgba(4,6,13,0.4)">New Chapter</text>
+            <text x="200" y="110" text-anchor="middle" font-family="serif" font-size="12" fill="rgba(200,168,75,0.35)">✦</text>
+            <text x="200" y="155" text-anchor="middle" font-family="'Playfair Display',serif" font-size="7" fill="rgba(4,6,13,0.25)" font-style="italic">This turn changes your life</text>
+          </g>
+          <ellipse cx="168" cy="192" rx="80" ry="6" fill="rgba(0,0,0,0.3)" filter="url(#ts)"/>
+          <text x="168" y="212" text-anchor="middle" font-family="'Playfair Display',serif" font-size="9" font-style="italic" fill="rgba(200,168,75,0.35)">— MK Eduspace</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Tutoring body -->
+    <div class="tutor-body">
+      <div class="tutor-body-title">Quality Education for Every Aspiring Student</div>
+      <p class="tutor-body-sub">From board exams to the most competitive national entrances — MK Eduspace prepares students with the same rigour and depth that earned a University Topper rank and national recognition.</p>
+
+      <div class="exam-grid">
+        <div class="exam-tile"><div class="exam-icon">⚗️</div><div class="exam-name">NEET</div><div class="exam-desc">Physics, Chemistry &amp; Biology — concept-first with targeted problem solving.</div></div>
+        <div class="exam-tile"><div class="exam-icon">🔢</div><div class="exam-name">JEE</div><div class="exam-desc">Mains &amp; Advanced — conceptual clarity and strategic numericals.</div></div>
+        <div class="exam-tile"><div class="exam-icon">🎓</div><div class="exam-name">CUET-UG</div><div class="exam-desc">Central University entrance — scoring patterns &amp; time management.</div></div>
+        <div class="exam-tile"><div class="exam-icon">📚</div><div class="exam-name">Boards</div><div class="exam-desc">Class 10 &amp; 12, CBSE, ICSE, State — formula sheets &amp; past papers.</div></div>
+        <div class="exam-tile"><div class="exam-icon">🏛️</div><div class="exam-name">University</div><div class="exam-desc">AUCET, TANCET, BHU, JNU — tailored prep for each exam pattern.</div></div>
+      </div>
+
+      <div class="feat-grid">
+        <div class="feat"><div class="feat-label">🔭 Expert-Led Learning</div><div class="feat-text">Taught by a University Topper and active researcher — depth that goes far beyond any textbook.</div></div>
+        <div class="feat"><div class="feat-label">🧩 Concept-First Method</div><div class="feat-text">Build lasting understanding from first principles — not rote formulas that fade under pressure.</div></div>
+        <div class="feat"><div class="feat-label">📊 Tracked Progress</div><div class="feat-text">Regular assessments and personalised feedback for measurable, steady improvement.</div></div>
+        <div class="feat"><div class="feat-label">🌐 Online &amp; Offline</div><div class="feat-text">Flexible sessions — learn from anywhere, at a schedule that suits you.</div></div>
+        <div class="feat"><div class="feat-label">💡 Dedicated Doubt Clearing</div><div class="feat-text">Every question answered with patience. No doubt too small.</div></div>
+        <div class="feat"><div class="feat-label">🏆 Result-Oriented</div><div class="feat-text">Focused on your rank, score, and long-term scientific thinking.</div></div>
+      </div>
+
+      <div class="tutor-cta">
+        <div class="tutor-cta-note">📩 One conversation can change everything — book a complimentary session today.</div>
+        <button class="btn btn-gold" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Book a Free Session</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AWARDS -->
+<section class="sr">
+  <div class="sh"><div class="sh-pre"><div class="sh-line"></div><div class="sh-tag">Recognition</div></div><h2 class="sh-title">Awards &amp; <em>Achievements</em></h2></div>
+  <div class="aw-grid">
+    <div class="aw"><div class="aw-src">IIA · Indian Institute of Astrophysics</div><div class="aw-title">Award &amp; Medal — Spectroscopic Research</div><div class="aw-desc">Honoured by Dr. Maheshwar Gopinath, IIA for distinguished research on Be star spectroscopy and accretion disk characteristics — a rare recognition at postgraduate level.</div></div>
+    <div class="aw"><div class="aw-src">ISRO · Aditya L1 Mission</div><div class="aw-title">Senior Scientist Recognition — Solar Physics</div><div class="aw-desc">Solar Flare Light-Curve Analysis personally recognised by Dr. Sankarasubramanian K., Senior Solar Scientist at ISRO, at the Aditya L1 support workshop.</div></div>
+    <div class="aw"><div class="aw-src">ICAMP 2023 · International Conference</div><div class="aw-title">Best Paper Award</div><div class="aw-desc">Awarded Best Paper at the International Conference on Advanced Novel Material in Multidisciplinary Perspectives — selected from a competitive international pool.</div></div>
+    <div class="aw"><div class="aw-src">National Workshop · Department of Physics</div><div class="aw-title">Invited Presenter — Experimental Astronomy</div><div class="aw-desc">Selected to present research at a national-level workshop — recognised among peers and senior researchers for research quality and communication.</div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="mq sr">
+  <div class="mq-track">
+    <span class="mq-item"><span>✦</span> Indian Institute of Astrophysics</span>
+    <span class="mq-item"><span>✦</span> ISRO</span>
+    <span class="mq-item"><span>✦</span> Pondicherry University</span>
+    <span class="mq-item"><span>✦</span> ARIES</span>
+    <span class="mq-item"><span>✦</span> Research Square</span>
+    <span class="mq-item"><span>✦</span> ICAMP 2023</span>
+    <span class="mq-item"><span>✦</span> Aditya L1 Mission</span>
+    <span class="mq-item"><span>✦</span> MK Eduspace</span>
+    <span class="mq-item"><span>✦</span> Indian Institute of Astrophysics</span>
+    <span class="mq-item"><span>✦</span> ISRO</span>
+    <span class="mq-item"><span>✦</span> Pondicherry University</span>
+    <span class="mq-item"><span>✦</span> ARIES</span>
+    <span class="mq-item"><span>✦</span> Research Square</span>
+    <span class="mq-item"><span>✦</span> ICAMP 2023</span>
+    <span class="mq-item"><span>✦</span> Aditya L1 Mission</span>
+    <span class="mq-item"><span>✦</span> MK Eduspace</span>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact" class="sr">
+  <div class="sh"><div class="sh-pre"><div class="sh-line"></div><div class="sh-tag">Connect</div></div><h2 class="sh-title">Get in <em>Touch</em></h2></div>
+  <div class="ct-grid">
+    <div class="ct-left">
+      <div class="ct-intro">Let's make <em>this the turn</em> that changes everything.</div>
+      <p class="ct-para">Whether you are interested in research collaboration, academic discussions, or seeking a dedicated and accomplished tutor for NEET, JEE, CUET or board examinations — I would be glad to hear from you.</p>
+      <div class="ct-links">
+        <a class="ct-link" href="mailto:m.k.barathdass@gmail.com"><div class="ct-link-icon">📧</div>m.k.barathdass@gmail.com</a>
+        <a class="ct-link" href="tel:+918825995520"><div class="ct-link-icon">📱</div>+91 88259 95520</a>
+        <a class="ct-link" href="https://www.linkedin.com/in/m-k-barath-dass-799913" target="_blank"><div class="ct-link-icon">💼</div>LinkedIn Profile</a>
+        <a class="ct-link" href="https://www.researchgate.net/profile/MkBarath" target="_blank"><div class="ct-link-icon">🔬</div>ResearchGate</a>
+      </div>
+    </div>
+    <div>
+      <div class="ct-card">
+        <div class="ct-qmark">"</div>
+        <div class="ct-quote">The cosmos is within us. We are made of star-stuff.</div>
+        <div class="ct-attr">— Carl Sagan</div>
+        <div class="ct-sub">Every student who learns physics takes one step closer to understanding the universe. Whether you aim for a top medical rank or simply want to know why stars shine — that journey begins with one turn. Let MK Eduspace be that turn.</div>
+        <br>
+        <button class="btn btn-gold" onclick="window.location.href='mailto:m.k.barathdass@gmail.com'">✉ Send a Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="ft-brand">MK Eduspace</div>
+  <div class="ft-motto">This turn changes your life</div>
+  <div class="ft-copy">© 2026 · M.K. Barath · Astrophysicist · Educator · Chennai, Puducherry, India</div>
+</footer>
+
+</div><!-- /wrap -->
+
+<script>
+/* LOADER */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('out'),2000));
+
+/* CURSOR */
+const cur=document.getElementById('cur'),cd=document.getElementById('curDot');
+let mx=0,my=0,cx=0,cy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function animCur(){cx+=(mx-cx)*.11;cy+=(my-cy)*.11;cur.style.left=cx+'px';cur.style.top=cy+'px';requestAnimationFrame(animCur);})();
+document.querySelectorAll('a,button,.rc,.aw,.exam-tile').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+});
+
+/* STAR CANVAS */
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+let W,H;
+function rsz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+rsz();window.addEventListener('resize',rsz);
+const ST=[];
+for(let i=0;i<260;i++)ST.push({x:Math.random(),y:Math.random(),r:Math.random()*1.3+.2,a:Math.random(),da:(Math.random()*.004+.001)*(Math.random()>.5?1:-1),g:Math.random()>.82});
+const SH=[];
+function spawnSH(){
+  if(SH.filter(s=>s.alive).length<2)SH.push({x:Math.random()*.7*W,y:Math.random()*.4*H,vx:5+Math.random()*7,vy:2+Math.random()*3,a:1,alive:true,trail:[]});
+  setTimeout(spawnSH,2000+Math.random()*3500);
+}
+spawnSH();
+(function drawStars(){
+  ctx.clearRect(0,0,W,H);
+  ST.forEach(s=>{
+    s.a+=s.da;if(s.a>1){s.a=1;s.da*=-1;}if(s.a<.05){s.a=.05;s.da*=-1;}
+    const x=s.x*W,y=s.y*H;
+    const g=ctx.createRadialGradient(x,y,0,x,y,s.r*2.5);
+    if(s.g){g.addColorStop(0,`rgba(226,200,126,${s.a})`);g.addColorStop(1,'rgba(226,200,126,0)');}
+    else{g.addColorStop(0,`rgba(200,215,255,${s.a})`);g.addColorStop(1,'rgba(140,160,255,0)');}
+    ctx.beginPath();ctx.arc(x,y,s.r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  });
+  for(let i=SH.length-1;i>=0;i--){
+    const s=SH[i];if(!s.alive){SH.splice(i,1);continue;}
+    s.trail.push({x:s.x,y:s.y,a:s.a});if(s.trail.length>22)s.trail.shift();
+    s.x+=s.vx;s.y+=s.vy;s.a-=.022;if(s.a<=0)s.alive=false;
+    s.trail.forEach((pt,idx)=>{const t=idx/s.trail.length;ctx.beginPath();ctx.arc(pt.x,pt.y,1.2*t,0,Math.PI*2);ctx.fillStyle=`rgba(200,168,75,${pt.a*t*.7})`;ctx.fill();});
+  }
+  requestAnimationFrame(drawStars);
+})();
+
+/* BOOK PAGE FLIP */
+(function bookFlip(){
+  const fg=document.getElementById('flipGroup');
+  const tfg=document.getElementById('tFlip');
+  let t=0;
+  function animate(){
+    t+=.008;
+    // Oscillate between 0 and -160 degrees around Y axis (simulated with scaleX)
+    const progress=(Math.sin(t)+1)/2; // 0 to 1
+    const scaleX=1-progress*1.95; // 1 → -0.95 (flip effect)
+    const tx=scaleX<0?`scaleX(${scaleX}) translateX(-4px)`:`scaleX(${scaleX})`;
+    if(fg)fg.style.transform=tx;
+    if(tfg)tfg.style.transform=tx;
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* SCROLL REVEAL */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('vis');
+    e.target.querySelectorAll('.sk-fill').forEach(f=>f.style.width=f.dataset.w+'%');
+  });
+},{threshold:.08,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.sr').forEach(el=>obs.observe(el));
+
+/* CV DOWNLOAD */
+document.getElementById('cvBtn').addEventListener('click',function(e){
+  e.preventDefault();
+  const cv=`M.K. BARATH — MK EDUSPACE
+================================
+Astrophysicist | Researcher | Educator
+"This turn changes your life."
+
+CONTACT
+-------
+Email: m.k.barathdass@gmail.com
+Phone: +91 88259 95520
+LinkedIn: linkedin.com/in/m-k-barath-dass-799913
+ResearchGate: researchgate.net/profile/MkBarath
+
+EDUCATION
+---------
+MSc Physics — Pondicherry University (Central University)
+CGPA: 9.29/10 | Topper of the Batch | Completed April 2026
+Distinctions: University Rank Holder, IIA Research Collaboration, ISRO Recognition
+
+BSc Physics — St. Joseph's College of Arts & Science, Cuddalore
+CGPA: 8.6/10 | College Distinction | Completed April 2024
+Distinctions: Best Paper ICAMP 2023, National Workshop Presenter
+
+RESEARCH & PROJECTS
+-------------------
+1. Dynamical Study of Non-Sidereal Objects — IIA, Bengaluru
+   Under Dr. Chrisphin Karthick | Institutional Collaboration
+
+2. Spectroscopic Studies of Be Stars — IIA
+   Award & Medal from Dr. Maheshwar Gopinath, IIA
+
+3. Solar Flare Light-Curve Analysis — ISRO & ARIES
+   Recognised by Dr. Sankarasubramanian K., Senior Solar Scientist, ISRO
+
+4. Arduino Ear: IoT Environmental Monitoring
+   Published preprint — DOI: 10.21203/rs.3.rs-4958935/v1
+
+AWARDS & RECOGNITION
+--------------------
+• Award & Medal — IIA Spectroscopic Research
+• Senior Scientist Recognition — ISRO, Aditya L1 Mission
+• Best Paper Award — ICAMP 2023 International Conference
+• Invited Presenter — National Workshop, Experimental Astronomy
+
+SKILLS
+------
+Astrophysics Research | Spectroscopic Analysis | Computational Physics
+Academic Writing | Teaching & Mentoring | Data Analysis
+Tools: Python, MATLAB, Arduino, AstroImageJ, IRAF, PYRAF, LaTeX, Origin Pro, Gnuplot
+
+TUTORING — MK EDUSPACE
+-----------------------
+NEET | JEE (Mains & Advanced) | CUET-UG | Board Exams (10 & 12)
+University Entrances: AUCET, TANCET, BHU, JNU
+Online & Offline | Concept-First Method | Free Introductory Session Available
+
+© 2026 MK Eduspace — M.K. Barath`;
+  const blob=new Blob([cv],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='MK_Barath_CV.txt';
+  a.click();
+});
+</script>
+</body>
+</html>
