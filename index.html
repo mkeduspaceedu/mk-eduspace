@@ -269,6 +269,44 @@ section{margin-bottom:var(--gap);}
 .ct-attr{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:26px;}
 .ct-sub{font-size:13px;color:var(--text2);line-height:1.75;padding-top:18px;border-top:1px solid var(--border);}
 
+.contact-section{
+  padding:70px 30px;
+  text-align:center;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:rgba(8,13,28,.75);
+  margin-bottom:var(--gap);
+}
+
+.contact-section h2{
+  font-family:'Playfair Display',serif;
+  font-size:36px;
+  color:var(--gold2);
+  margin-bottom:20px;
+}
+
+.contact-section p{
+  color:var(--text2);
+  margin-bottom:12px;
+  font-size:15px;
+}
+
+.contact-section a{
+  display:inline-block;
+  margin-top:16px;
+  padding:12px 24px;
+  background:var(--gold);
+  color:var(--ink);
+  text-decoration:none;
+  border-radius:4px;
+  font-weight:600;
+  transition:.25s;
+}
+
+.contact-section a:hover{
+  transform:translateY(-2px);
+}
+  
 /* FOOTER */
 footer{text-align:center;padding:40px 0;border-top:1px solid var(--border);}
 .ft-brand{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold2);letter-spacing:2px;margin-bottom:6px;}
@@ -298,6 +336,31 @@ footer{text-align:center;padding:40px 0;border-top:1px solid var(--border);}
   .tutor-body{padding:36px 24px;}
   .tutor-strip{flex-direction:column;}
   .tutor-strip-brand{border-right:none;border-bottom:1px solid rgba(0,0,0,.12);}
+}
+/* WHATSAPP FLOAT BUTTON */
+.whatsapp-float{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:#25D366;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-size:26px;
+  font-weight:700;
+  z-index:9999;
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+
+.whatsapp-float:hover{
+  transform:scale(1.08);
+  box-shadow:0 12px 35px rgba(0,0,0,.45);
 }
 @media(max-width:600px){
   .wrap{padding:0 18px;}
@@ -648,7 +711,7 @@ footer{text-align:center;padding:40px 0;border-top:1px solid var(--border);}
   </div>
 </section>
 
-<section id="contact" class="contact-section">
+<section id="quick-contact" class="contact-section">
   <h2>Contact MK Eduspace</h2>
 
   <p>Email: mkeduspace@gmail.com</p>
@@ -872,11 +935,11 @@ Online & Offline | Concept-First Method | Free Introductory Session Available
 });
 </script>
 <!-- WhatsApp Floating Button -->
-<a href="https://wa.me/918825995520"
+<a href="https://wa.me/918825995520?text=Hello%20MK%20Eduspace%2C%20I%20want%20to%20know%20about%20classes."
    class="whatsapp-float"
-   target="_blank">
-   WA
+   target="_blank"
+   rel="noopener noreferrer">
+   💬
 </a>
-
 </body>
 </html>
